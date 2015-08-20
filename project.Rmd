@@ -76,12 +76,11 @@ preProc <- preProcess(trainingCl[,1:52],method="pca",thresh=.7) #8 components ar
 preProc <- preProcess(trainingCl[,1:52],method="pca",thresh=.8) #12 components are required
 preProc <- preProcess(trainingCl[,1:52],method="pca",thresh=.9) #18 components are required
 preProc <- preProcess(trainingCl[,1:52],method="pca",thresh=.95) #25 components are required
-#use 12 components to capture 80% of the variance
-preProc <- preProcess(trainingCl[,1:52],method="pca",pcaComp=12) #12 components are required
+
+preProc <- preProcess(trainingCl[,1:52],method="pca",pcaComp=20) #18 components are required
 preProc$rotation
 trainingPC <- predict(preProc,trainingCl[,1:52])
-trainingPC$classe <- training$classe
-modelFittree <- train(classe ~.,method="rpart",data=trainingPC)
+modelFittree <- train(classe ~.,method="rpart",data=training)
 library(rattle)
 fancyRpartPlot(modelFittree$finalModel)
 ```
@@ -103,6 +102,8 @@ modelFitB <- train(as.factor(trainingCl$classB) ~ .,method="glm",data=trainingPC
 modelFitC <- train(as.factor(trainingCl$classC) ~ .,method="glm",data=trainingPC)
 modelFitD <- train(as.factor(trainingCl$classD) ~ .,method="glm",data=trainingPC)
 modelFitE <- train(as.factor(trainingCl$classE) ~ .,method="glm",data=trainingPC)
+featurePlot(x=trainingPC[,1:5],y=training$X,plot="pairs")
+featurePlot(x=training[,11:13],y=training$X,plot="pairs")
 ```
 
 Check with test set
