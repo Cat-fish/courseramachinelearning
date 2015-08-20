@@ -77,7 +77,7 @@ preProc <- preProcess(trainingCl[,1:52],method="pca",thresh=.8) #12 components a
 preProc <- preProcess(trainingCl[,1:52],method="pca",thresh=.9) #18 components are required
 preProc <- preProcess(trainingCl[,1:52],method="pca",thresh=.95) #25 components are required
 
-preProc <- preProcess(trainingCl[,1:52],method="pca",pcaComp=20) #18 components are required
+preProc <- preProcess(trainingCl[,1:52],method="pca",pcaComp=25) 
 preProc$rotation
 trainingPC <- predict(preProc,trainingCl[,1:52])
 modelFittree <- train(classe ~.,method="rpart",data=training)
@@ -85,26 +85,14 @@ library(rattle)
 fancyRpartPlot(modelFittree$finalModel)
 ```
 
-glm method works only for binary outcomes...
-Make dummy variables so that glm method can be used here
+Apply ramdom forest method (non-bionominal outcome & large sample size) 
 ```{r}
-trainingCl$classA <- ifelse(trainingCl$classe=="A",1,0)
-trainingCl$classB <- ifelse(trainingCl$classe=="B",1,0)
-trainingCl$classC <- ifelse(trainingCl$classe=="C",1,0)
-trainingCl$classD <- ifelse(trainingCl$classe=="D",1,0)
-trainingCl$classE <- ifelse(trainingCl$classe=="E",1,0)
+library(randomForest)
+modFitRF <- randomForest(trainingCl$classe ~ .,   data=trainingPC, do.trace=T)
+print(modFitRF) # view results 
+importance(modFitRF) # importance of each predictor
 ```
 
-Check the model fitting
-```{r}
-modelFitA <- train(as.factor(trainingCl$classA) ~ .,method="glm",data=trainingPC)
-modelFitB <- train(as.factor(trainingCl$classB) ~ .,method="glm",data=trainingPC)
-modelFitC <- train(as.factor(trainingCl$classC) ~ .,method="glm",data=trainingPC)
-modelFitD <- train(as.factor(trainingCl$classD) ~ .,method="glm",data=trainingPC)
-modelFitE <- train(as.factor(trainingCl$classE) ~ .,method="glm",data=trainingPC)
-featurePlot(x=trainingPC[,1:5],y=training$X,plot="pairs")
-featurePlot(x=training[,11:13],y=training$X,plot="pairs")
-```
 
 Check with test set
 ```{r}
@@ -114,23 +102,9 @@ NArate <- apply(testingCl, 2, function(x) sum(is.na(x)))/nrow(testingCl)
 testingCl <- testingCl[!(NArate>0.95)]
 summary(testingCl)
 testingPC <- predict(preProc,testingCl[,1:52])
-
-testingCl$classA <- ifelse(testingCl$classe=="A",1,0)
-testingCl$classB <- ifelse(testingCl$classe=="B",1,0)
-testingCl$classC <- ifelse(testingCl$classe=="C",1,0)
-testingCl$classD <- ifelse(testingCl$classe=="D",1,0)
-testingCl$classE <- ifelse(testingCl$classe=="E",1,0)
-
-confusionMatrix(testingCl$classA,predict(modelFitA,testingPC)) #accuracy=.798, sensitivity=.808, specificity=.745
-confusionMatrix(testingCl$classB,predict(modelFitB,testingPC)) #accuracy=.800, sensitivity=.808, specificity=.313
-confusionMatrix(testingCl$classC,predict(modelFitC,testingPC)) #accuracy=.823, sensitivity=.834, specificity=.463
-confusionMatrix(testingCl$classD,predict(modelFitD,testingPC)) #accuracy=.836, sensitivity=.846, specificity=.500
-confusionMatrix(testingCl$classE,predict(modelFitE,testingPC)) #accuracy=.835, sensitivity=.839, specificity=.750
-
+confusionMatrix(testingCl$classe,predict(modFitRF,testingPC))
 ```
 
-The models I developed have about 80% accuracy, sensitivity, and specificity to detect class A activity.
-However, specificities to detect other class activities are quite low.
 
 #predict classes of 20 test data
 ```{r}
@@ -141,12 +115,7 @@ NArate <- apply(testdataCl, 2, function(x) sum(is.na(x)))/nrow(testdataCl)
 testdataCl <- testdataCl[!(NArate>0.95)]
 summary(testdataCl)
 testdataPC <- predict(preProc,testdataCl[,1:52])
-testdataCl$classA <- predict(modelFitA,testdataPC)
-testdataCl$classB <- predict(modelFitB,testdataPC)
-testdataCl$classC <- predict(modelFitC,testdataPC)
-testdataCl$classD <- predict(modelFitD,testdataPC)
-testdataCl$classE <- predict(modelFitE,testdataPC)
-testdataCl$classTOT <- rowSums(testdata[,161:165])
+testdataCl$classe <- predict(modFitRF,testdataPC)
 ```
 
 
