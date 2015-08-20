@@ -34,32 +34,49 @@ The goal of your project is to predict the manner in which they did the exercise
 
 #Loading data 
 ```{r}
-training <- read.csv("pml-training.csv")
-testing <- read.csv("pml-testing.csv")
+data <- read.csv("pml-training.csv")
 ```
 
 Check the data sets 
 ```{r}
-head(training)
-head(testing)
-nrow(training);nrow(testing)
-colnames(training)
-summary(training)
+head(data)
+nrow(data)
+colnames(data)
+summary(data)
 ```
 The training set includes 19622 observations while the testing set includes 20 observations
 
 Cross validation-- use 70% of training set data to built a model, and use the rest to test the model
 ```{r}
-
+library(caret)
+set.seed(1111)
+train <- createDataPartition(y=data$classe,p=.70,list=F)
+training <- data[train,]
+testing <- data[-train,]
 ```
 
+Standardizing the training data
 
-
-Cleaning data
+Cleaning the training data
 ```{r}
-#exclude user_name, timestamp, and window data (they cannot be used for prediction)
-Cl <- grep("name|timestamp|window", colnames(training), value=F) 
+summary(training)
+#exclude identifier, timestamp, and window data (they cannot be used for prediction)
+Cl <- grep("name|timestamp|window|X", colnames(training), value=F) 
 trainingCl <- training[,-Cl]
+#select variables with high (over 95%) missing data --> exclude them from the analysis
+trainingCl[trainingCl==""] <- NA
+NArate <- apply(trainingCl, 2, function(x) sum(is.na(x)))/nrow(trainingCl)
+trainingCl <- trainingCl[!(NArate>0.95)]
+summary(trainingCl)
 ```
 
+Plot tree
+```{r}
+modFit <- train(classe ~ .,method="rpart",data=trainingCl)
+print(modFit$finalModel)
+plot(modFit$finalModel,uniform=T)
+text(modFit$finalModel,use.n=T,all=T,cex=1)
+library(rattle)
+fancyRpartPlot(modFit$finalModel)
+```
 
