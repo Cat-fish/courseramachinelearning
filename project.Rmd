@@ -85,6 +85,7 @@ trainingPC <- predict(preProc,trainingCl[,1:52])
 Apply ramdom forest method (non-bionominal outcome & large sample size) 
 ```{r}
 library(randomForest)
+set.seed(111)
 modFitRF <- randomForest(trainingCl$classe ~ .,   data=trainingPC, do.trace=F)
 print(modFitRF) # view results 
 importance(modFitRF) # importance of each predictor

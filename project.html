@@ -139,7 +139,8 @@ trainingPC &lt;- predict(preProc,trainingCl[,1:52])</code></pre>
 <pre class="r"><code>library(randomForest)</code></pre>
 <pre><code>## randomForest 4.6-10
 ## Type rfNews() to see new features/changes/bug fixes.</code></pre>
-<pre class="r"><code>modFitRF &lt;- randomForest(trainingCl$classe ~ .,   data=trainingPC, do.trace=F)
+<pre class="r"><code>set.seed(111)
+modFitRF &lt;- randomForest(trainingCl$classe ~ .,   data=trainingPC, do.trace=F)
 print(modFitRF) # view results </code></pre>
 <pre><code>## 
 ## Call:
@@ -148,41 +149,41 @@ print(modFitRF) # view results </code></pre>
 ##                      Number of trees: 500
 ## No. of variables tried at each split: 5
 ## 
-##         OOB estimate of  error rate: 2.59%
+##         OOB estimate of  error rate: 2.63%
 ## Confusion matrix:
 ##      A    B    C    D    E class.error
-## A 3876    9   13    5    3 0.007680492
-## B   44 2571   34    2    7 0.032731377
-## C    5   38 2326   24    3 0.029215359
-## D    7    6  104 2130    5 0.054174067
-## E    1    8   21   17 2478 0.018613861</code></pre>
+## A 3876   10   12    6    2 0.007680492
+## B   40 2569   41    1    7 0.033483822
+## C    3   46 2321   24    2 0.031302170
+## D    6    5  104 2132    5 0.053285968
+## E    1    6   23   17 2478 0.018613861</code></pre>
 <pre class="r"><code>importance(modFitRF) # importance of each predictor</code></pre>
 <pre><code>##      MeanDecreaseGini
-## PC1          572.3609
-## PC2          458.8458
-## PC3          501.5873
-## PC4          365.8816
-## PC5          556.7810
-## PC6          430.9262
-## PC7          402.8629
-## PC8          705.3515
-## PC9          505.6043
-## PC10         396.0036
-## PC11         339.7100
-## PC12         582.3393
-## PC13         346.2943
-## PC14         653.4349
-## PC15         468.9175
-## PC16         441.0693
-## PC17         444.8101
-## PC18         284.7219
-## PC19         347.1358
-## PC20         359.8680
-## PC21         410.1221
-## PC22         420.2179
-## PC23         249.5559
-## PC24         230.5189
-## PC25         385.3894</code></pre>
+## PC1          572.3823
+## PC2          465.1771
+## PC3          489.9353
+## PC4          381.9407
+## PC5          556.6158
+## PC6          433.9591
+## PC7          396.0190
+## PC8          712.0371
+## PC9          509.2587
+## PC10         395.3153
+## PC11         338.4532
+## PC12         576.9494
+## PC13         346.6584
+## PC14         656.0705
+## PC15         474.0918
+## PC16         438.1862
+## PC17         436.9765
+## PC18         282.3928
+## PC19         348.4318
+## PC20         363.1450
+## PC21         403.7026
+## PC22         421.2717
+## PC23         254.5371
+## PC24         227.4118
+## PC25         378.5898</code></pre>
 </div>
 <div id="check-with-test-set" class="section level2">
 <h2>Check with test set</h2>
@@ -196,33 +197,33 @@ confusionMatrix(testingCl$classe,predict(modFitRF,testingPC))</code></pre>
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1660    2   10    2    0
-##          B   13 1098   18    2    8
-##          C    0   12 1000   12    2
-##          D    3    0   48  910    3
-##          E    0    1   11    7 1063
+##          A 1660    2    9    1    2
+##          B   14 1097   19    2    7
+##          C    1   13 1000   10    2
+##          D    3    0   45  914    2
+##          E    0    1   12    7 1062
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.9738          
-##                  95% CI : (0.9694, 0.9778)
-##     No Information Rate : 0.2848          
+##                Accuracy : 0.9742          
+##                  95% CI : (0.9698, 0.9781)
+##     No Information Rate : 0.2851          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.9669          
-##  Mcnemar's Test P-Value : NA              
+##                   Kappa : 0.9673          
+##  Mcnemar's Test P-Value : 7.864e-09       
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9905   0.9865   0.9200   0.9753   0.9879
-## Specificity            0.9967   0.9914   0.9946   0.9891   0.9960
-## Pos Pred Value         0.9916   0.9640   0.9747   0.9440   0.9824
-## Neg Pred Value         0.9962   0.9968   0.9821   0.9953   0.9973
-## Prevalence             0.2848   0.1891   0.1847   0.1585   0.1828
-## Detection Rate         0.2821   0.1866   0.1699   0.1546   0.1806
+## Sensitivity            0.9893   0.9856   0.9217   0.9786   0.9879
+## Specificity            0.9967   0.9912   0.9946   0.9899   0.9958
+## Pos Pred Value         0.9916   0.9631   0.9747   0.9481   0.9815
+## Neg Pred Value         0.9957   0.9966   0.9825   0.9959   0.9973
+## Prevalence             0.2851   0.1891   0.1844   0.1587   0.1827
+## Detection Rate         0.2821   0.1864   0.1699   0.1553   0.1805
 ## Detection Prevalence   0.2845   0.1935   0.1743   0.1638   0.1839
-## Balanced Accuracy      0.9936   0.9890   0.9573   0.9822   0.9920</code></pre>
+## Balanced Accuracy      0.9930   0.9884   0.9581   0.9842   0.9919</code></pre>
 </div>
 <div id="predict-classes-of-20-test-data" class="section level2">
 <h2>Predict classes of 20 test data</h2>
